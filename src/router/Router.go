@@ -15,10 +15,12 @@ func Init() {
 
 func NewRouter() *gin.Engine {
 	router := gin.New()
-	resource := router.Group("/api")
+	resource := router.Group("/task")
 	resource.Use(middleware.LogRequestMiddleware())
 	{
-		resource.GET("/getRequest", controller.GetRequestHandler)
+		resource.POST("", controller.NewTask)
+		resource.GET("", controller.GetTasks)
+		resource.DELETE("/:tasknumber", controller.DeleteTask)
 	}
 	return router
 }
