@@ -21,6 +21,7 @@ func NewRouter() *gin.Engine {
 		resource.POST("", controller.NewTask)
 		resource.GET("", controller.GetTasks)
 		resource.DELETE("/:tasknumber", controller.DeleteTask)
+		resource.PATCH("/:tasknumber", controller.EditTask)
 	}
 	return router
 }

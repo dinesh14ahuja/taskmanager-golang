@@ -17,7 +17,7 @@ func NewTask(c *gin.Context) {
 	if err != nil {
 		logger.FatalLn("Failed to read request body." + err.Error())
 	}
-	constant.Tasklist[taskData.TaskNumber] = taskData
+	constant.Tasklist[taskData.TaskNumber] = &taskData
 	c.JSON(200, gin.H{
 		"message": "Task saved successfully",
 	})
@@ -26,7 +26,7 @@ func NewTask(c *gin.Context) {
 func GetTasks(c *gin.Context) {
 	var response = make([]model.Task, 0)
 	for _, value := range constant.Tasklist {
-		response = append(response, value)
+		response = append(response, *value)
 	}
 	c.JSON(200, response)
 }
@@ -47,4 +47,24 @@ func DeleteTask(c *gin.Context) {
 		"message": "Task not found",
 	})
 
+}
+
+func EditTask(c *gin.Context) {
+	taskNumber := c.Param("tasknumber")
+	var patchData model.Task
+
+	err := c.BindJSON(&patchData)
+	if err != nil {
+		logger.FatalLn("Error while binding JSON," + err.Error())
+	}
+
+	taskNumberValue, _ := strconv.Atoi(taskNumber)
+	value, ok := constant.Tasklist[taskNumberValue]
+	if ok {
+		value.UpdateTask(patchData)
+	} else {
+		c.JSON(404, gin.H{"message": "Task not found"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Task updated successfully"})
 }
